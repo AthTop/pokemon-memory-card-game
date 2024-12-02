@@ -1,6 +1,8 @@
 import { useState } from "react";
 import InitPage from "./components/InitPage";
 import "./App.css";
+import { generatePokeObjectsArray } from "./components/utils";
+import CardContainer from "./components/CardContainer";
 
 // Init page to ask user how many cards they want to play with (limit 3 to 16)
 // Generate user.input number of unique Ids, put in a set and call the pokeApi to generate objects with
@@ -12,12 +14,44 @@ import "./App.css";
 
 // potentially make it so card background color derives from pokemon's type
 
+const dummyData = [
+  {
+    id: 0,
+    pokeId: 238,
+    pokeName: "Smoochum",
+    pokeSpriteUrl:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/238.png",
+    pokeCryUrl:
+      "https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/legacy/238.ogg",
+    pokeType: "ice",
+  },
+  {
+    id: 1,
+    pokeId: 519,
+    pokeName: "Pidove",
+    pokeSpriteUrl:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/519.png",
+    pokeCryUrl:
+      "https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/legacy/519.ogg",
+    pokeType: "normal",
+  },
+  {
+    id: 2,
+    pokeId: 651,
+    pokeName: "Quilladin",
+    pokeSpriteUrl:
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/651.png",
+    pokeCryUrl: null,
+    pokeType: "grass",
+  },
+];
+
 function App() {
   const [isInit, setIsInit] = useState(false);
-  const [userCardsSelection, setUserCardsSelection] = useState(3);
-
-  const handleUserInput = (input) => {
-    setUserCardsSelection(input);
+  const [pokeCards, setPokeCards] = useState([]);
+  const handleUserInput = async (input) => {
+    // const data = await generatePokeObjectsArray(input);
+    setPokeCards(dummyData);
     setIsInit(true);
   };
 
@@ -28,7 +62,15 @@ function App() {
       </>
     );
   }
-  return <p> {userCardsSelection}</p>;
+  return (
+    <>
+      <div className="scoreboard">
+        <p>Current score: {}</p>
+        <p>Best score: {}</p>
+      </div>
+      <CardContainer pokeCards={pokeCards} />
+    </>
+  );
 }
 
 export default App;

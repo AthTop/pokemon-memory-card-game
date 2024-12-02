@@ -17,17 +17,22 @@ export const generatePokeObjectsArray = async (index) => {
     const pokeObj = {
       id: i++,
       pokeId: pokeId,
-      pokeName: pokemon.name,
-      pokeSpriteUrl: pokemon.sprite.front_default,
-      pokeCryUrl: pokemon.cries.legacy,
+      pokeName: capitalizeFirstLetter(pokemon.name),
+      pokeSpriteUrl: pokemon.sprites.other['official-artwork'].front_default || pokemon.sprites.front_default,
+      pokeCryUrl: pokemon.cries.legacy || pokemon.cries.latest,
       pokeType: pokemon.types[0].type.name,
     };
     array.push(pokeObj);
   }
+  console.log(array);
   return array;
 };
 
 const getRandomInt = (max) => (Math.floor(Math.random() * max)+1);
+
+const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
 async function getData(url) {
   try {
