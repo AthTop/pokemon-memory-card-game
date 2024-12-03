@@ -4,6 +4,11 @@ import "./App.css";
 import { generatePokeObjectsArray, arrayShuffle } from "./components/utils";
 import CardContainer from "./components/CardContainer";
 import FloatMessage from "./components/FloatMessage";
+import VolumeSlider from "./components/VolumeSlider";
+import useSound from "use-sound";
+import loseSfx from './Assets/lose.mp3';
+import winSfx from "./Assets/win.mp3";
+
 // Init page to ask user how many cards they want to play with (limit 3 to 16)
 // Generate user.input number of unique Ids, put in a set and call the pokeApi to generate objects with
 // a 0-user.input index, the pokemon's name and their front sprite link (optional their sound to be played when clicked)
@@ -56,6 +61,9 @@ function App() {
   const [currentScore, setCurrentScore] = useState(0);
   const [bestScore, setBestScore] = useState(0);
   const [message, setMessage] = useState('');
+  const [volume, setVolume] = useState(0.5);
+  const [playLose] = useSound(loseSfx, { volume: volume+0.3, playbackRate: 1.3 });
+  const [playWin] = useSound(winSfx, {volume: volume+0.3, playbackRate: 0.7});
 
   const handleUserInput = async (input) => {
     // const data = await generatePokeObjectsArray(input);
@@ -81,18 +89,24 @@ function App() {
   };
   const checkWinCondition = (newScore) => {
     if (newScore === pokeCards.length) {
-      setMessage('You win!');
-      setCurrentScore(0);
-      setClickedIds(new Set());
+      setTimeout(() => {
+        playWin();
+        setMessage('You win!');
+        setCurrentScore(0);
+        setClickedIds(new Set());
+      }, 300);
       return;
     }
   };
   // Handle user click
   const handleCardClick = (id) => {
     if (clickedIds.has(id)) {
-      setMessage('You lose!');
-      setCurrentScore(0);
-      setClickedIds(new Set());
+      setTimeout(() => {
+        playLose();
+        setMessage('You lose!');
+        setCurrentScore(0);
+        setClickedIds(new Set());
+      }, 300);
       return;
     }
     // Do score logic and check for win condition
@@ -106,6 +120,9 @@ function App() {
   const resetMessage = () => {
     setMessage("");
   }
+  const adjustVolume = (value) => {
+    setVolume(value);
+  };
 
   if (!isInit) {
     return (
@@ -116,12 +133,13 @@ function App() {
   }
   return (
     <>
+      <VolumeSlider volume={volume} adjustVolume={adjustVolume} />
       <div className="scoreboard">
         <p>Current score: {currentScore}</p>
         <p>Best score: {bestScore}</p>
       </div>
       <FloatMessage message={message} resetMessage={resetMessage} />
-      <CardContainer pokeCards={pokeCards} handleCardClick={handleCardClick} />
+      <CardContainer pokeCards={pokeCards} handleCardClick={handleCardClick} volume={volume}/>
     </>
   );
 }
