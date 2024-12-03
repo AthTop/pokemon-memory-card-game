@@ -1,7 +1,7 @@
 import { useState } from "react";
 import InitPage from "./components/InitPage";
 import "./App.css";
-import { generatePokeObjectsArray } from "./components/utils";
+import { generatePokeObjectsArray, arrayShuffle } from "./components/utils";
 import CardContainer from "./components/CardContainer";
 
 // Init page to ask user how many cards they want to play with (limit 3 to 16)
@@ -24,6 +24,7 @@ const dummyData = [
     pokeCryUrl:
       "https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/legacy/238.ogg",
     pokeType: "ice",
+    isClicked: false,
   },
   {
     id: 1,
@@ -34,6 +35,7 @@ const dummyData = [
     pokeCryUrl:
       "https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/legacy/519.ogg",
     pokeType: "normal",
+    isClicked: false,
   },
   {
     id: 2,
@@ -43,16 +45,58 @@ const dummyData = [
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/651.png",
     pokeCryUrl: null,
     pokeType: "grass",
+    isClicked: false,
   },
 ];
 
 function App() {
   const [isInit, setIsInit] = useState(false);
   const [pokeCards, setPokeCards] = useState([]);
+  const [clickedIds, setClickedIds] = useState(new Set());
+  const [currentScore, setCurrentScore] = useState(0);
+  const [bestScore, setBestScore] = useState(0);
   const handleUserInput = async (input) => {
     // const data = await generatePokeObjectsArray(input);
     setPokeCards(dummyData);
     setIsInit(true);
+  };
+  // When card is clicked, set isClicked to true and shuffle the pokeCards state array
+  const clickAndShuffle = (id) => {
+    const newScore = currentScore + 1;
+    setCurrentScore(newScore);
+    checkAndUpdateBestScore(newScore);
+    checkWinCondition(newScore);
+    setClickedIds((clickedIds) => new Set([...clickedIds, id]));
+    setPokeCards((pokeCards) =>
+      arrayShuffle(
+        pokeCards.map((pokeCard) =>
+          pokeCard.id === id ? { ...pokeCard, isClicked: true } : pokeCard
+        )
+      )
+    );
+  };
+  const checkAndUpdateBestScore = (newScore) => {
+    if (newScore > bestScore) {
+      setBestScore(newScore);
+    }
+  };
+  const checkWinCondition = (newScore) => {
+    if (newScore === pokeCards.length) {
+      setCurrentScore(0);
+      console.log("you win");
+    }
+  };
+
+  const handleCardClick = (id) => {
+    if (clickedIds.has(id)) {
+      // Lose functionality
+      console.log("you lose");
+      setBestScore(0);
+      setCurrentScore(0);
+      setClickedIds(new Set());
+      return;
+    }
+    clickAndShuffle(id);
   };
 
   if (!isInit) {
@@ -65,10 +109,10 @@ function App() {
   return (
     <>
       <div className="scoreboard">
-        <p>Current score: {}</p>
-        <p>Best score: {}</p>
+        <p>Current score: {currentScore}</p>
+        <p>Best score: {bestScore}</p>
       </div>
-      <CardContainer pokeCards={pokeCards} />
+      <CardContainer pokeCards={pokeCards} handleCardClick={handleCardClick} />
     </>
   );
 }

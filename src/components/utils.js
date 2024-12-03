@@ -49,3 +49,11 @@ async function getData(url) {
 
 
 // TODO array shuffle helper function
+
+export const arrayShuffle = (array) => {
+  for(let i = array.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
