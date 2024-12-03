@@ -6,53 +6,8 @@ import CardContainer from "./components/CardContainer";
 import FloatMessage from "./components/FloatMessage";
 import VolumeSlider from "./components/VolumeSlider";
 import useSound from "use-sound";
-import loseSfx from './Assets/lose.mp3';
+import loseSfx from "./Assets/lose.mp3";
 import winSfx from "./Assets/win.mp3";
-
-// Init page to ask user how many cards they want to play with (limit 3 to 16)
-// Generate user.input number of unique Ids, put in a set and call the pokeApi to generate objects with
-// a 0-user.input index, the pokemon's name and their front sprite link (optional their sound to be played when clicked)
-// and place all objects created in a set to be used as a reference for the card Ids state to generate cards
-// App that contains Card components
-// Has state variables for array of card Ids, current score, best score
-// Method to shuffle array and set state with it on Card click
-
-// potentially make it so card background color derives from pokemon's type
-
-const dummyData = [
-  {
-    id: 0,
-    pokeId: 238,
-    pokeName: "Smoochum",
-    pokeSpriteUrl:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/238.png",
-    pokeCryUrl:
-      "https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/legacy/238.ogg",
-    pokeType: "ice",
-    isClicked: false,
-  },
-  {
-    id: 1,
-    pokeId: 519,
-    pokeName: "Pidove",
-    pokeSpriteUrl:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/519.png",
-    pokeCryUrl:
-      "https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/legacy/519.ogg",
-    pokeType: "normal",
-    isClicked: false,
-  },
-  {
-    id: 2,
-    pokeId: 651,
-    pokeName: "Quilladin",
-    pokeSpriteUrl:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/651.png",
-    pokeCryUrl: null,
-    pokeType: "grass",
-    isClicked: false,
-  },
-];
 
 function App() {
   const [isInit, setIsInit] = useState(false);
@@ -60,18 +15,23 @@ function App() {
   const [clickedIds, setClickedIds] = useState(new Set());
   const [currentScore, setCurrentScore] = useState(0);
   const [bestScore, setBestScore] = useState(0);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [volume, setVolume] = useState(0.5);
-  const [playLose] = useSound(loseSfx, { volume: volume+0.3, playbackRate: 1.3 });
-  const [playWin] = useSound(winSfx, {volume: volume+0.3, playbackRate: 0.7});
+  const [playLose] = useSound(loseSfx, {
+    volume: volume + 0.3,
+    playbackRate: 1.3,
+  });
+  const [playWin] = useSound(winSfx, {
+    volume: volume + 0.3,
+    playbackRate: 0.7,
+  });
 
   const handleUserInput = async (input) => {
-    // const data = await generatePokeObjectsArray(input);
-    setPokeCards(dummyData);
+    const data = await generatePokeObjectsArray(input);
+    setPokeCards(data);
     setIsInit(true);
   };
   // When card is clicked, set isClicked to true and shuffle the pokeCards state array
-
   const clickAndShuffle = (id) => {
     setClickedIds((clickedIds) => new Set([...clickedIds, id]));
     setPokeCards((pokeCards) =>
@@ -91,7 +51,7 @@ function App() {
     if (newScore === pokeCards.length) {
       setTimeout(() => {
         playWin();
-        setMessage('You win!');
+        setMessage("You win!");
         setCurrentScore(0);
         setClickedIds(new Set());
       }, 300);
@@ -103,7 +63,7 @@ function App() {
     if (clickedIds.has(id)) {
       setTimeout(() => {
         playLose();
-        setMessage('You lose!');
+        setMessage("You lose!");
         setCurrentScore(0);
         setClickedIds(new Set());
       }, 300);
@@ -119,7 +79,7 @@ function App() {
 
   const resetMessage = () => {
     setMessage("");
-  }
+  };
   const adjustVolume = (value) => {
     setVolume(value);
   };
@@ -132,15 +92,21 @@ function App() {
     );
   }
   return (
-    <>
-      <VolumeSlider volume={volume} adjustVolume={adjustVolume} />
-      <div className="scoreboard">
-        <p>Current score: {currentScore}</p>
-        <p>Best score: {bestScore}</p>
+    <div className="game">
+      <div className="control">
+        <VolumeSlider volume={volume} adjustVolume={adjustVolume} />
+        <div>
+          <p>Current score: {currentScore}</p>
+          <p>Best score: {bestScore}</p>
+        </div>
       </div>
       <FloatMessage message={message} resetMessage={resetMessage} />
-      <CardContainer pokeCards={pokeCards} handleCardClick={handleCardClick} volume={volume}/>
-    </>
+      <CardContainer
+        pokeCards={pokeCards}
+        handleCardClick={handleCardClick}
+        volume={volume}
+      />
+    </div>
   );
 }
 

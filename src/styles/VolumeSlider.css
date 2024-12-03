@@ -1,0 +1,8 @@
+.volume-slider {
+    display: flex;
+    align-items: center;
+}
+
+.volume-slider input {
+    width: 80%;
+}
