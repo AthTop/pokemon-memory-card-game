@@ -3,7 +3,7 @@ import InitPage from "./components/InitPage";
 import "./App.css";
 import { generatePokeObjectsArray, arrayShuffle } from "./components/utils";
 import CardContainer from "./components/CardContainer";
-
+import FloatMessage from "./components/FloatMessage";
 // Init page to ask user how many cards they want to play with (limit 3 to 16)
 // Generate user.input number of unique Ids, put in a set and call the pokeApi to generate objects with
 // a 0-user.input index, the pokemon's name and their front sprite link (optional their sound to be played when clicked)
@@ -55,17 +55,16 @@ function App() {
   const [clickedIds, setClickedIds] = useState(new Set());
   const [currentScore, setCurrentScore] = useState(0);
   const [bestScore, setBestScore] = useState(0);
+  const [message, setMessage] = useState('');
+
   const handleUserInput = async (input) => {
     // const data = await generatePokeObjectsArray(input);
     setPokeCards(dummyData);
     setIsInit(true);
   };
   // When card is clicked, set isClicked to true and shuffle the pokeCards state array
+
   const clickAndShuffle = (id) => {
-    const newScore = currentScore + 1;
-    setCurrentScore(newScore);
-    checkAndUpdateBestScore(newScore);
-    checkWinCondition(newScore);
     setClickedIds((clickedIds) => new Set([...clickedIds, id]));
     setPokeCards((pokeCards) =>
       arrayShuffle(
@@ -82,22 +81,31 @@ function App() {
   };
   const checkWinCondition = (newScore) => {
     if (newScore === pokeCards.length) {
-      setCurrentScore(0);
-      console.log("you win");
-    }
-  };
-
-  const handleCardClick = (id) => {
-    if (clickedIds.has(id)) {
-      // Lose functionality
-      console.log("you lose");
-      setBestScore(0);
+      setMessage('You win!');
       setCurrentScore(0);
       setClickedIds(new Set());
       return;
     }
-    clickAndShuffle(id);
   };
+  // Handle user click
+  const handleCardClick = (id) => {
+    if (clickedIds.has(id)) {
+      setMessage('You lose!');
+      setCurrentScore(0);
+      setClickedIds(new Set());
+      return;
+    }
+    // Do score logic and check for win condition
+    const newScore = currentScore + 1;
+    clickAndShuffle(id);
+    setCurrentScore(newScore);
+    checkAndUpdateBestScore(newScore);
+    checkWinCondition(newScore);
+  };
+
+  const resetMessage = () => {
+    setMessage("");
+  }
 
   if (!isInit) {
     return (
@@ -112,6 +120,7 @@ function App() {
         <p>Current score: {currentScore}</p>
         <p>Best score: {bestScore}</p>
       </div>
+      <FloatMessage message={message} resetMessage={resetMessage} />
       <CardContainer pokeCards={pokeCards} handleCardClick={handleCardClick} />
     </>
   );
