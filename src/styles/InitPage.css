@@ -49,3 +49,22 @@ label {
     color: rgb(255, 174, 0);
     font-size: 1.2rem;
 }
+
+.start-game-container button:active {
+    transform: translateY(2px);
+}
+
+.loader{
+    display: inline-block;
+    border: 5px solid #f3f3f3; 
+    border-top: 5px solid #3498db; 
+    border-radius: 50%;
+    width: 1.2rem;
+    height: 1.2rem;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }

@@ -5,13 +5,14 @@ import "../styles/InitPage.css";
 export default function InitPage({ onSubmit }) {
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const value = Number(e.target.value);
     setInput(value);
     setError(
-      value < 3 || value > 15
-        ? "Cards should be 3 to 15"
+      value < 3 || value > 18
+        ? "Cards should be 3 to 18"
         : isNaN(value)
         ? "Only numbers are valid input"
         : ""
@@ -20,6 +21,7 @@ export default function InitPage({ onSubmit }) {
 
   const handleSubmit = () => {
     if (error === "" && input !== "") {
+      setLoading(true);
       onSubmit(input);
     }
   };
@@ -32,14 +34,17 @@ export default function InitPage({ onSubmit }) {
         <input
           type="number"
           min="3"
-          max="15"
+          max="18"
           value={input}
-          placeholder="3 to 15 cards allowed"
+          placeholder="3 to 18 cards allowed"
           onChange={handleChange}
-          className = {error ? 'invalid-input' : ''}
+          className={error ? "invalid-input" : ""}
         />
       </label>
-      <button onClick={handleSubmit}>Start Game!</button>
+      <button onClick={handleSubmit}>
+        Start Game!
+      </button>
+      <div className={loading ? "loader" : ""}></div>
       <p>{error ? "*" + error : ""}</p>
     </div>
   );
